@@ -73,13 +73,15 @@ async function createDependencyBumpPR(name: string, currentVersion: string | Alp
   const title = `rddepman: bump ${ name } from ${ printable(currentVersion) } to ${ printable(latestVersion) }`;
   const branchName = getBranchName(name, currentVersion, latestVersion);
 
-  await getOctokit().rest.pulls.create({
-    owner: GITHUB_OWNER,
-    repo:  GITHUB_REPO,
-    title,
-    base:  MAIN_BRANCH,
-    head:  branchName,
-  });
+  setTimeout(async() => {
+    await getOctokit().rest.pulls.create({
+      owner: GITHUB_OWNER,
+      repo:  GITHUB_REPO,
+      title,
+      base:  MAIN_BRANCH,
+      head:  branchName,
+    });
+  }, 1000);
 }
 
 async function checkDependencies(): Promise<void> {
