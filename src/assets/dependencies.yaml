@@ -1,11 +1,10 @@
----
 limaAndQemu: "1.27"
 alpineLimaISO:
   isoVersion: 0.2.21
   alpineVersion: 3.16.0
 WSLDistro: "0.27"
 kuberlr: 0.4.2
-helm: 3.9.4
+helm: 3.10.0
 dockerCLI: 20.10.17
 dockerBuildx: 0.9.1
 dockerCompose: 2.11.1
