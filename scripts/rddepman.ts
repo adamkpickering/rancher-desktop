@@ -52,6 +52,7 @@ function git(...args: string[]): number | null {
       GIT_COMMITTER_NAME:  name,
       GIT_COMMITTER_EMAIL: email,
     },
+    stdio: 'inherit',
   });
 
   if (result.error) {
