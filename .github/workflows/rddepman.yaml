@@ -4,8 +4,7 @@ on:
     - cron: '23 8 * * *'
   workflow_dispatch: {}
 
-permissions:
-  pull-requests: write
+permissions: write-all
 
 jobs:
   check-update-versions:

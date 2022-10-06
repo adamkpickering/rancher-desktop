@@ -201,6 +201,7 @@ async function checkDependencies(): Promise<void> {
     await writeDependencyVersions(depVersionsPath, depVersions);
     git('add', depVersionsPath);
     git('commit', '--signoff', '--message', commitMessage);
+    console.log(`github token defined ${ !!process.env.GITHUB_TOKEN }`);
     git('push', '--force', `https://${ process.env.GITHUB_TOKEN }@github.com/${ GITHUB_OWNER }/${ GITHUB_REPO }`);
     await createDependencyBumpPR(name, currentVersion, latestVersion);
   }
