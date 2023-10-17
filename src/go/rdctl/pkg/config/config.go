@@ -20,6 +20,7 @@ package config
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -56,6 +57,8 @@ var (
 	DefaultConfigPath string
 )
 
+var ErrMainProcessNotRunning = errors.New("main process not running")
+
 // DefineGlobalFlags sets up the global flags, available for all sub-commands
 func DefineGlobalFlags(rootCmd *cobra.Command) {
 	var configDir string
@@ -79,6 +82,81 @@ func DefineGlobalFlags(rootCmd *cobra.Command) {
 	rootCmd.PersistentFlags().StringVar(&connectionSettings.Port, "port", "", "overrides the port setting in the config file")
 	rootCmd.PersistentFlags().StringVar(&connectionSettings.Password, "password", "", "overrides the password setting in the config file")
 }
+
+func PrototypeGetConnectionInfo() (*ConnectionInfo, error) {
+	// Create default *ConnectionInfo
+	connectionInfo := &ConnectionInfo{
+		Host: "127.0.0.1",
+	}
+
+	// overlay config file
+	configFilePresent := true
+	if configPath == "" {
+		configPath = DefaultConfigPath
+	}
+	content, err := os.ReadFile(configPath)
+	if errors.Is(err, os.ErrNotExist) {
+		configFilePresent = false
+	} else if err != nil {
+		return nil, fmt.Errorf("failed to read config file %q: %w", configPath, err)
+	} else {
+		var fileSettings CLIConfig
+		if err = json.Unmarshal(content, &fileSettings); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal config file %q: %w", err)
+		}
+		if fileSettings.Port != 0 {
+			connectionInfo.Port = strconv.Itoa(fileSettings.Port)
+		}
+		if fileSettings.User != "" {
+			connectionInfo.User = fileSettings.User
+		}
+		if fileSettings.Password != "" {
+			connectionInfo.Password = fileSettings.Password
+		}
+	}
+
+	// Overwrite connectionInfo values with any user-specified values
+	if connectionSettings.Host != "" {
+		connectionInfo.Host = connectionSettings.Host
+	}
+	if connectionSettings.Port != "" {
+		connectionInfo.Port = connectionSettings.Port
+	}
+	if connectionSettings.User != "" {
+		connectionInfo.User = connectionSettings.User
+	}
+	if connectionSettings.Password != "" {
+		connectionInfo.Password = connectionSettings.Password
+	}
+
+	if sufficientConnectionInfo(connectionInfo) {
+		return connectionInfo, nil
+	}
+	if configPath == DefaultConfigPath && !configFilePresent {
+		return nil, ErrMainProcessNotRunning
+	}
+}
+
+func sufficientConnectionInfo(connectionInfo *ConnectionInfo) bool {
+	return connectionSettings.Port == "" || connectionSettings.User == "" || connectionSettings.Password == ""
+}
+
+// func readConfigFromFile() (*ConnectionInfo, error) {
+// 	if configPath == "" {
+// 		configPath = DefaultConfigPath
+// 	}
+// 	content, err := os.ReadFile(configPath)
+// 	if err != nil {
+// 		if configPath == DefaultConfigPath && errors.Is(err, os.ErrNotExist) {
+// 			return nil, ErrMainProcessNotRunning
+// 		}
+// 		return nil, fmt.Errorf("failed to read config file %q: %w", configPath, err)
+// 	}
+// 	var fileSettings CLIConfig
+// 	if err = json.Unmarshal(content, &fileSettings); err != nil {
+// 		return nil, fmt.Errorf("failed to unmarshal config file %q: %w", err)
+// 	}
+// }
 
 // GetConnectionInfo returns the connection info if it has it, and an error message explaining why
 // it isn't available if it doesn't have it.
