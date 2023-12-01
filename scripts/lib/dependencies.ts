@@ -28,7 +28,6 @@ export type AlpineLimaISOVersion = {
   isoVersion: string;
   // The version of Alpine Linux that the ISO is built on
   alpineVersion: string
-  toString: () => string
 };
 
 export type DependencyVersions = {

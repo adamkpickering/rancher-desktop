@@ -214,9 +214,6 @@ export class AlpineLimaISO implements Dependency, GitHubDependency {
     const result = {
       isoVersion: release.tag_name.replace(/^v/, ''),
       alpineVersion,
-      toString() {
-        return release.tag_name;
-      },
     };
 
     return result;
