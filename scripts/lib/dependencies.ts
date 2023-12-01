@@ -61,6 +61,8 @@ export async function readDependencyVersions(path: string): Promise<DependencyVe
 
 export async function writeDependencyVersions(path: string, depVersions: DependencyVersions): Promise<void> {
   console.log(JSON.stringify(depVersions))
+  console.log(depVersions)
+  console.log(depVersions.toString())
   const rawContents = YAML.stringify(depVersions);
   console.log("got here")
 
