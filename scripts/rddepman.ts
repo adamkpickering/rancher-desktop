@@ -149,6 +149,7 @@ async function checkDependencies(): Promise<void> {
       latestVersion,
     };
   }));
+  console.log(versionComparisons.toString())
 
   // filter comparisons down to the ones that need an update
   const updatesAvailable = versionComparisons.filter(({ dependency, currentVersion, latestVersion }) => {
