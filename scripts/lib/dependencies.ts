@@ -60,6 +60,7 @@ export async function readDependencyVersions(path: string): Promise<DependencyVe
 }
 
 export async function writeDependencyVersions(path: string, depVersions: DependencyVersions): Promise<void> {
+  console.log(JSON.stringify(depVersions))
   const rawContents = YAML.stringify(depVersions);
 
   await fs.promises.writeFile(path, rawContents, { encoding: 'utf-8' });
